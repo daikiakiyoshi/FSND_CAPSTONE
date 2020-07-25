@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import json 
 
-from models import setup_db, db, Portfolio, Security, PortfolioComposition
+from models import setup_db, db, Portfolio, Security, PortfolioComposition, AssetClass, Region
 
 def create_app(test_config=None):
   # create and configure the app
@@ -131,6 +131,34 @@ def create_security():
         'region': security.region.name,
         'asset_class': security.asset_class.name,
 	})
+
+@app.route('/asset_classes', methods=['GET'])
+def retrieve_asset_classes():
+
+    asset_classes = AssetClass.query.order_by(AssetClass.id).all()
+    asset_classes_formatted = [asset_class.format() for asset_class in asset_classes]
+
+    if len(asset_classes_formatted) == 0:
+        abort(404)
+
+    return jsonify({
+        'success': True,
+        'asset_classes': asset_classes_formatted
+    })
+
+@app.route('/regions', methods=['GET'])
+def retrieve_regions():
+
+    regions = Region.query.order_by(Region.id).all()
+    regions_formatted = [region.format() for region in regions]
+
+    if len(regions_formatted) == 0:
+        abort(404)
+
+    return jsonify({
+        'success': True,
+        'regions': regions_formatted
+    })
 
 @app.errorhandler(404)
 def not_found(error):

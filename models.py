@@ -90,6 +90,12 @@ class AssetClass(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String, nullable=False, unique=True)
 
+	def format(self):
+		return {
+			'asset_class_id': self.id,
+			'asset_class': self.name,
+	    }
+
 '''
 Region
 '''
@@ -98,3 +104,9 @@ class Region(db.Model):
 
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String, nullable=False, unique=True)
+
+	def format(self):
+		return {
+			'region_id': self.id,
+			'region': self.name,
+	    }
