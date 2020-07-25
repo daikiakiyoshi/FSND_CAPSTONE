@@ -30,47 +30,71 @@ class PortfolioComposition(db.Model):
     security_id = db.Column(db.Integer, db.ForeignKey('security.id'), primary_key=True)
     weight = db.Column(db.Integer, nullable=False)
 
-    security = db.relationship("Security")
+    security = db.relationship("Security", backref="portfolio_composition")
+
+    def format(self):
+    	return {
+    		'security_name': self.security.name,
+    		'region': self.security.region.name,
+    		'asset_class': self.security.asset_class.name,
+    		'weight': self.weight
+    	}
 
 '''
 Portfolios
 '''
 class Portfolio(db.Model):
-  __tablename__ = 'portfolio'
+	__tablename__ = 'portfolio'
 
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String, nullable=False, unique=True)
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String, nullable=False, unique=True)
 
-  securities = db.relationship("PortfolioComposition")
+	portfolio_compositions = db.relationship("PortfolioComposition", backref="portfolio")
+
+	def format(self):
+	    return {
+			'portfolio_id': self.id,
+			'portfolio_name': self.name,
+			'portfolio_compositions': [portfolio_composition.format() for portfolio_composition in self.portfolio_compositions]
+	    }
 
 '''
 Securities
 '''
 class Security(db.Model):
-  __tablename__ = 'security'
+	__tablename__ = 'security'
 
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String, nullable=False, unique=True)
-  region_id = db.Column(db.Integer, db.ForeignKey('region.id'), nullable=False)
-  asset_class_id = db.Column(db.Integer, db.ForeignKey('assetClass.id'), nullable=False)
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String, nullable=False, unique=True)
+	region_id = db.Column(db.Integer, db.ForeignKey('region.id'), nullable=False)
+	asset_class_id = db.Column(db.Integer, db.ForeignKey('assetClass.id'), nullable=False)
 
-  region = db.relationship("Region")
-  asset_class = db.relationship("AssetClass")
+	region = db.relationship("Region", backref="security")
+	asset_class = db.relationship("AssetClass", backref="security")
+
+	def format(self):
+		return {
+			'security_id': self.id,
+			'security_name': self.name,
+			'region': self.region.name,
+			'asset_class': self.asset_class.name
+	    }
+
 
 '''
 AssetClass
 '''
 class AssetClass(db.Model):
-  __tablename__ = 'assetClass'
+	__tablename__ = 'assetClass'
 
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String, nullable=False, unique=True)
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String, nullable=False, unique=True)
 
 '''
 Region
 '''
 class Region(db.Model):
-  __tablename__ = 'region'
+	__tablename__ = 'region'
 
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String, nullable=False, unique=True)
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String, nullable=False, unique=True)
