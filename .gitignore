@@ -1,2 +1,4 @@
 __pycache__/
 venv/
+migrations/__pycache__
+migrations/versions/__pycache__
