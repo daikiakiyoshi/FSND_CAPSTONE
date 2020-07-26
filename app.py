@@ -35,7 +35,6 @@ def retrieve_portfolios():
         'portfolios': portfolios_formatted
     })
 
-
 @app.route('/portfolios/<int:portfolio_id>',methods = ['GET'])
 def retrieve_portfolio(portfolio_id):
 
@@ -94,6 +93,43 @@ def delete_portfolio(portfolio_id):
         'success': True,
         'deleted': portfolio_id
     })
+
+@app.route('/portfolios/<int:portfolio_id>',  methods=['PATCH'])
+def update_portfolio(portfolio_id):
+    body = request.get_json()
+    new_name = body.get('portfolio_name', None)
+    new_portfolio_compositions = body.get('portfolio_compositions', None)
+    
+    portfolio = Portfolio.query.get(portfolio_id)
+
+    if portfolio is None:
+    	abort(404)
+
+    if new_name is not None:
+    	portfolio.name = new_name
+    if new_portfolio_compositions is not None:
+    	# check if portfolio compositions sum up to 100 %
+    	total_weight = 0
+    	for portfolio_composition in new_portfolio_compositions:
+    		total_weight += portfolio_composition['weight']
+    	if total_weight != 100:
+    		abort(422)
+
+    	# delete the current compositions
+    	PortfolioComposition.query.filter_by(portfolio_id=portfolio_id).delete()
+
+    	# add new compositions
+    	for portfolio_composition in new_portfolio_compositions:
+    		composition = PortfolioComposition(security_id=portfolio_composition['security_id'], weight=portfolio_composition['weight'])
+    		composition.portfolio = portfolio
+    		db.session.add(composition)
+
+    	db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'updated': portfolio_id
+    }), 200
 
 @app.route('/securities', methods=['GET'])
 def retrieve_securities():
@@ -165,6 +201,31 @@ def delete_security(security_id):
         'success': True,
         'deleted': security_id
     })
+
+@app.route('/securities/<int:security_id>',  methods=['PATCH'])
+def update_security(security_id):
+    body = request.get_json()
+    new_name = body.get('security_name', None)
+    new_region_id = body.get('region_id', None)
+    new_asset_class_id = body.get('asset_class_id', None)
+    security = Security.query.get(security_id)
+
+    if security is None:
+    	abort(404)
+
+    if new_name is not None:
+    	security.name = new_name
+    if new_region_id is not None:
+    	security.region_id = new_region_id
+    if new_asset_class_id is not None:
+    	security.asset_class_id = new_asset_class_id
+
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'updated': security_id
+    }), 200
 
 @app.route('/asset_classes', methods=['GET'])
 def retrieve_asset_classes():
