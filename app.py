@@ -80,6 +80,21 @@ def create_portfolio():
         'portfolio_name': portfolio.name,
 	})
 
+@app.route('/portfolios/<int:portfolio_id>', methods=['DELETE'])
+def delete_portfolio(portfolio_id):
+    portfolio = Portfolio.query.get(portfolio_id)
+
+    if portfolio is None:
+    	abort(404)
+
+    db.session.delete(portfolio)
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'deleted': portfolio_id
+    })
+
 @app.route('/securities', methods=['GET'])
 def retrieve_securities():
 
@@ -131,6 +146,25 @@ def create_security():
         'region': security.region.name,
         'asset_class': security.asset_class.name,
 	})
+
+@app.route('/securities/<int:security_id>', methods=['DELETE'])
+def delete_security(security_id):
+    security = Security.query.get(security_id)
+
+    if security is None:
+    	abort(404)
+
+    # check if the security is in any of the existing portfolios
+    if PortfolioComposition.query.filter_by(security_id=security_id).count() > 0:
+    	abort(422)
+
+    db.session.delete(security)
+    db.session.commit()
+
+    return jsonify({
+        'success': True,
+        'deleted': security_id
+    })
 
 @app.route('/asset_classes', methods=['GET'])
 def retrieve_asset_classes():

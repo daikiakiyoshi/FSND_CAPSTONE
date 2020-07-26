@@ -49,7 +49,8 @@ class Portfolio(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String, nullable=False, unique=True)
 
-	portfolio_compositions = db.relationship("PortfolioComposition", backref="portfolio")
+	portfolio_compositions = db.relationship("PortfolioComposition", backref="portfolio", 
+		cascade="all, delete, delete-orphan")
 
 	def format(self):
 	    return {
