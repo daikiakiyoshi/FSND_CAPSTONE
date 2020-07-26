@@ -1,0 +1,37 @@
+INSERT INTO portfolio (name) VALUES ('PORTFOLIO_1');
+INSERT INTO portfolio (name) VALUES ('PORTFOLIO_2');
+INSERT INTO portfolio (name) VALUES ('PORTFOLIO_3');
+
+INSERT INTO "assetClass" (name) VALUES ('Equity');
+INSERT INTO "assetClass" (name) VALUES ('Fixed Income');
+INSERT INTO "assetClass" (name) VALUES ('Alternative');
+
+INSERT INTO region (name) VALUES ('Asia Pacific');
+INSERT INTO region (name) VALUES ('Europe');
+INSERT INTO region (name) VALUES ('Middle East');
+INSERT INTO region (name) VALUES ('Africa');
+INSERT INTO region (name) VALUES ('America');
+
+INSERT INTO security (name, region_id, asset_class_id) VALUES ('Vanguard Russell 1000 ETF', 5, 1);
+INSERT INTO security (name, region_id, asset_class_id) VALUES ('iShares Core 10+ Year USD Bond ETF', 5, 2);
+INSERT INTO security (name, region_id, asset_class_id) VALUES ('iShares Core MSCI Pacific ETF', 1, 1);
+INSERT INTO security (name, region_id, asset_class_id) VALUES ('IQ Hedge Multi-Strategy Tracker ETF', 5, 3);
+INSERT INTO security (name, region_id, asset_class_id) VALUES ('Vanguard FTSE Europe ETF', 2, 1);
+
+INSERT INTO portfolio_composition (portfolio_id, security_id, weight) VALUES (1, 1, 50);
+INSERT INTO portfolio_composition (portfolio_id, security_id, weight) VALUES (1, 2, 50);
+INSERT INTO portfolio_composition (portfolio_id, security_id, weight) VALUES (2, 2, 30);
+INSERT INTO portfolio_composition (portfolio_id, security_id, weight) VALUES (2, 3, 30);
+INSERT INTO portfolio_composition (portfolio_id, security_id, weight) VALUES (2, 4, 40);
+INSERT INTO portfolio_composition (portfolio_id, security_id, weight) VALUES (3, 4, 50);
+INSERT INTO portfolio_composition (portfolio_id, security_id, weight) VALUES (3, 5, 50);
+
+
+
+
+
+
+
+
+
+
