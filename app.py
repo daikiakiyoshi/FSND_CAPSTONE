@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_cors import CORS
 import json 
 
@@ -9,13 +10,14 @@ from models import setup_db, db, Portfolio, Security, PortfolioComposition, Asse
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
-
   setup_db(app)
   CORS(app)
 
   return app
 
 app = create_app()
+migrate = Migrate(app, db)
+
 
 @app.route('/')
 def hello_world():
