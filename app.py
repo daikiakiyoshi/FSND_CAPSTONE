@@ -37,7 +37,7 @@ def retrieve_portfolios():
 
 
 @app.route('/portfolios/<int:portfolio_id>',methods = ['GET'])
-def retrive_portfolio(portfolio_id):
+def retrieve_portfolio(portfolio_id):
 
 	portfolio = Portfolio.query.get(portfolio_id)
 
@@ -111,7 +111,7 @@ def retrieve_securities():
 
 
 @app.route('/securities/<int:security_id>',methods = ['GET'])
-def retrive_security(security_id):
+def retrieve_security(security_id):
 
 	security = Security.query.get(security_id)
 
