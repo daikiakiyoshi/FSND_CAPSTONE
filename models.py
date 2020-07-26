@@ -1,6 +1,5 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
 database_name = "assetmanagement"
 database_path = "postgresql://localhost:5432/{}".format(database_name)
@@ -12,7 +11,6 @@ setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
 def setup_db(app, database_path=database_path):
-	migrate = Migrate(app, db)
 	app.config["SQLALCHEMY_DATABASE_URI"] = database_path
 	app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 	db.app = app
