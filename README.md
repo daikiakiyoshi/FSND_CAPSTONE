@@ -3,7 +3,7 @@
 ## HEROKU project URL
 ```https://nd-asset-managament.herokuapp.com/```
 
-To use the live URL above, replace <token> with FUND_MANAGER in setup.sh.
+To use the live URL above, replace <token> with FUND_MANAGER token in setup.sh.
 - Sample: ```curl https://nd-asset-managament.herokuapp.com/portfolios -X GET -H 'Authorization: Bearer <token>'```
 Please see API Endpoints section below for all available endpoints.
 
@@ -50,8 +50,6 @@ source setup.sh
 ```
 
 ## Running the server
-
-From within the `backend` directory first ensure you are working using your created virtual environment.
 
 To run the server, execute:
 
