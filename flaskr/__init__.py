@@ -6,6 +6,7 @@ from flask_cors import CORS
 import json 
 
 from models import setup_db, db, Portfolio, Security, PortfolioComposition, AssetClass, Region
+from auth import AuthError, requires_auth
 
 def create_app(test_config=None):
     # create and configure the app
@@ -14,8 +15,8 @@ def create_app(test_config=None):
     CORS(app)
 
     @app.route('/portfolios', methods=['GET'])
-    def retrieve_portfolios():
-
+    @requires_auth('get:portfolios')
+    def retrieve_portfolios(payload):
         portfolios = Portfolio.query.order_by(Portfolio.id).all()
         portfolios_formatted = [portfolio.format() for portfolio in portfolios]
 
@@ -28,7 +29,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/portfolios/<int:portfolio_id>',methods = ['GET'])
-    def retrieve_portfolio(portfolio_id):
+    @requires_auth('get:portfolios')
+    def retrieve_portfolio(payload, portfolio_id):
 
         portfolio = Portfolio.query.get(portfolio_id)
 
@@ -43,7 +45,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/portfolios',methods = ['POST'])
-    def create_portfolio():
+    @requires_auth('post:portfolios')
+    def create_portfolio(payload):
 
         body = request.get_json()
         portfolio_name = body.get('portfolio_name', None)
@@ -72,7 +75,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/portfolios/<int:portfolio_id>', methods=['DELETE'])
-    def delete_portfolio(portfolio_id):
+    @requires_auth('delete:portfolios')
+    def delete_portfolio(payload, portfolio_id):
         portfolio = Portfolio.query.get(portfolio_id)
 
         if portfolio is None:
@@ -87,7 +91,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/portfolios/<int:portfolio_id>',  methods=['PATCH'])
-    def update_portfolio(portfolio_id):
+    @requires_auth('patch:portfolios')
+    def update_portfolio(payload, portfolio_id):
         body = request.get_json()
         new_name = body.get('portfolio_name', None)
         new_portfolio_compositions = body.get('portfolio_compositions', None)
@@ -124,7 +129,8 @@ def create_app(test_config=None):
         }), 200
 
     @app.route('/securities', methods=['GET'])
-    def retrieve_securities():
+    @requires_auth('get:securities')
+    def retrieve_securities(payload):
 
         securities = Security.query.order_by(Security.id).all()
         securities_formatted = [security.format() for security in securities]
@@ -139,7 +145,8 @@ def create_app(test_config=None):
 
 
     @app.route('/securities/<int:security_id>',methods = ['GET'])
-    def retrieve_security(security_id):
+    @requires_auth('get:securities')
+    def retrieve_security(payload, security_id):
 
         security = Security.query.get(security_id)
 
@@ -155,7 +162,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/securities',methods = ['POST'])
-    def create_security():
+    @requires_auth('post:securities')
+    def create_security(payload):
 
         body = request.get_json()
         security_name = body.get('security_name', None)
@@ -179,7 +187,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/securities/<int:security_id>', methods=['DELETE'])
-    def delete_security(security_id):
+    @requires_auth('delete:securities')
+    def delete_security(payload, security_id):
         security = Security.query.get(security_id)
 
         if security is None:
@@ -198,7 +207,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/securities/<int:security_id>',  methods=['PATCH'])
-    def update_security(security_id):
+    @requires_auth('patch:securities')
+    def update_security(payload, security_id):
         body = request.get_json()
         new_name = body.get('security_name', None)
         new_region_id = body.get('region_id', None)
@@ -207,7 +217,7 @@ def create_app(test_config=None):
 
         if security is None:
             abort(404)
-            
+
         if Region.query.get(new_region_id) == None or AssetClass.query.get(new_asset_class_id) == None:
             abort(422)
 
@@ -268,6 +278,14 @@ def create_app(test_config=None):
             "error": 422,
             "message": "Unprocessable entity"
         }), 422
+
+    @app.errorhandler(AuthError)
+    def auth_error(error):
+        return jsonify({
+            'success': False,
+            'error': 401,
+            'message': 'authentification failed'
+        }), 401
 
     return app
 
