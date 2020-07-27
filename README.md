@@ -4,8 +4,8 @@
 ```https://nd-asset-managament.herokuapp.com/```
 
 To use the live URL above, replace <token> with FUND_MANAGER in setup.sh.
-### GET '/portfolios'
-- Sample: ```curl https://nd-asset-managament.herokuapp.com/ -X GET -H 'Authorization: Bearer <token>'```
+- Sample: ```curl https://nd-asset-managament.herokuapp.com/portfolios -X GET -H 'Authorization: Bearer <token>'```
+Please see API Endpoints section below for all available endpoints.
 
 ## Getting Started
 If you want to run this project locally, run the followings.
@@ -66,7 +66,7 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 ## Tasks
 
 Asset Manager Specifications
-* The Asset Manager models a company that is responsible for making portfolios and managing and allocating securities to those portfolios. You are a Fund Manager within the company and are creating a system to simplify and streamline your process. 
+* The Asset Manager models a company that is responsible for making portfolios and managing and allocating securities to those portfolios. You are a Fund Manager within the company and are creating a system to simplify and streamline your process.
 * Models:
     * Portfolios with attributes name, security, and weight
     * Securities with attributes name, region, asset class
