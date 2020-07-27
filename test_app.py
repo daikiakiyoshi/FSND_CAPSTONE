@@ -4,7 +4,7 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 
 from app import create_app
-from models import setup_db, Portfolio, Security, PortfolioComposition, AssetClass, Region
+from models import setup_db, db, Portfolio, Security, PortfolioComposition, AssetClass, Region
 
 
 class AssetManagementSystemTestCase(unittest.TestCase):
@@ -20,6 +20,7 @@ class AssetManagementSystemTestCase(unittest.TestCase):
         self.database_name = "assetmanagement_test"
         self.database_path = "postgresql://localhost:5432/{}".format(self.database_name)
         setup_db(self.app, self.database_path)
+        db.create_all()
 
     def tearDown(self):
         """Executed after reach test"""
