@@ -19,8 +19,7 @@ def setup_db(app, database_path=database_path):
 
 
 '''
-PortfolioComposition
-	association table between Portfolio and Security
+PortfolioComposition association table between Portfolio and Security
 '''
 
 
