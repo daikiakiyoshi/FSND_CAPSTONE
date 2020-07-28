@@ -10,10 +10,12 @@ AUTH0_DOMAIN = os.environ.get('AUTH0_DOMAIN')
 ALGORITHMS = ['RS256']
 API_AUDIENCE = os.environ.get('API_AUDIENCE')
 
+
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
         self.status_code = status_code
+
 
 def get_token_auth_header():
     auth = request.headers.get('Authorization', None)
@@ -45,6 +47,7 @@ def get_token_auth_header():
     token = parts[1]
     return token
 
+
 def check_permissions(permission, payload):
     if 'permissions' not in payload:
         raise AuthError({
@@ -59,6 +62,7 @@ def check_permissions(permission, payload):
         }, 403)
 
     return True
+
 
 def verify_decode_jwt(token):
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')

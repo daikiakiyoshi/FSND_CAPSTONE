@@ -3,10 +3,11 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-import json 
+import json
 
 from models import setup_db, db, Portfolio, Security, PortfolioComposition, AssetClass, Region
 from auth import AuthError, requires_auth
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -37,7 +38,7 @@ def create_app(test_config=None):
             'portfolios': portfolios_formatted
         })
 
-    @app.route('/portfolios/<int:portfolio_id>',methods = ['GET'])
+    @app.route('/portfolios/<int:portfolio_id>', methods=['GET'])
     @requires_auth('get:portfolios')
     def retrieve_portfolio(payload, portfolio_id):
 
@@ -46,14 +47,15 @@ def create_app(test_config=None):
         if portfolio is None:
             abort(404)
 
-        return jsonify({
-            'success': True,
-            'portfolio_id': portfolio.id,
-            'portfolio_name': portfolio.name,
-            'portfolio_compositions': [portfolio_composition.format() for portfolio_composition in portfolio.portfolio_compositions]
-        })
+        return jsonify(
+            {
+                'success': True,
+                'portfolio_id': portfolio.id,
+                'portfolio_name': portfolio.name,
+                'portfolio_compositions': [
+                    portfolio_composition.format() for portfolio_composition in portfolio.portfolio_compositions]})
 
-    @app.route('/portfolios',methods = ['POST'])
+    @app.route('/portfolios', methods=['POST'])
     @requires_auth('post:portfolios')
     def create_portfolio(payload):
 
@@ -71,7 +73,9 @@ def create_app(test_config=None):
         portfolio = Portfolio(name=portfolio_name)
 
         for portfolio_composition in portfolio_compositions:
-            composition = PortfolioComposition(security_id=portfolio_composition['security_id'], weight=portfolio_composition['weight'])
+            composition = PortfolioComposition(
+                security_id=portfolio_composition['security_id'],
+                weight=portfolio_composition['weight'])
             composition.portfolio = portfolio
             db.session.add(composition)
 
@@ -99,13 +103,13 @@ def create_app(test_config=None):
             'deleted': portfolio_id
         })
 
-    @app.route('/portfolios/<int:portfolio_id>',  methods=['PATCH'])
+    @app.route('/portfolios/<int:portfolio_id>', methods=['PATCH'])
     @requires_auth('patch:portfolios')
     def update_portfolio(payload, portfolio_id):
         body = request.get_json()
         new_name = body.get('portfolio_name', None)
         new_portfolio_compositions = body.get('portfolio_compositions', None)
-        
+
         portfolio = Portfolio.query.get(portfolio_id)
 
         if portfolio is None:
@@ -122,11 +126,14 @@ def create_app(test_config=None):
                 abort(422)
 
             # delete the current compositions
-            PortfolioComposition.query.filter_by(portfolio_id=portfolio_id).delete()
+            PortfolioComposition.query.filter_by(
+                portfolio_id=portfolio_id).delete()
 
             # add new compositions
             for portfolio_composition in new_portfolio_compositions:
-                composition = PortfolioComposition(security_id=portfolio_composition['security_id'], weight=portfolio_composition['weight'])
+                composition = PortfolioComposition(
+                    security_id=portfolio_composition['security_id'],
+                    weight=portfolio_composition['weight'])
                 composition.portfolio = portfolio
                 db.session.add(composition)
 
@@ -152,8 +159,7 @@ def create_app(test_config=None):
             'securities': securities_formatted
         })
 
-
-    @app.route('/securities/<int:security_id>',methods = ['GET'])
+    @app.route('/securities/<int:security_id>', methods=['GET'])
     @requires_auth('get:securities')
     def retrieve_security(payload, security_id):
 
@@ -170,7 +176,7 @@ def create_app(test_config=None):
             'region': security.region.name
         })
 
-    @app.route('/securities',methods = ['POST'])
+    @app.route('/securities', methods=['POST'])
     @requires_auth('post:securities')
     def create_security(payload):
 
@@ -179,10 +185,14 @@ def create_app(test_config=None):
         region_id = body.get('region_id', None)
         asset_class_id = body.get('asset_class_id', None)
 
-        if Region.query.get(region_id) == None or AssetClass.query.get(asset_class_id) == None:
+        if Region.query.get(region_id) is None or AssetClass.query.get(
+                asset_class_id) is None:
             abort(422)
 
-        security = Security(name=security_name, region_id=region_id, asset_class_id=asset_class_id)
+        security = Security(
+            name=security_name,
+            region_id=region_id,
+            asset_class_id=asset_class_id)
 
         db.session.add(security)
         db.session.commit()
@@ -204,7 +214,8 @@ def create_app(test_config=None):
             abort(404)
 
         # check if the security is in any of the existing portfolios
-        if PortfolioComposition.query.filter_by(security_id=security_id).count() > 0:
+        if PortfolioComposition.query.filter_by(
+                security_id=security_id).count() > 0:
             abort(422)
 
         db.session.delete(security)
@@ -215,7 +226,7 @@ def create_app(test_config=None):
             'deleted': security_id
         })
 
-    @app.route('/securities/<int:security_id>',  methods=['PATCH'])
+    @app.route('/securities/<int:security_id>', methods=['PATCH'])
     @requires_auth('patch:securities')
     def update_security(payload, security_id):
         body = request.get_json()
@@ -227,7 +238,8 @@ def create_app(test_config=None):
         if security is None:
             abort(404)
 
-        if Region.query.get(new_region_id) == None or AssetClass.query.get(new_asset_class_id) == None:
+        if Region.query.get(new_region_id) is None or AssetClass.query.get(
+                new_asset_class_id) is None:
             abort(422)
 
         if new_name is not None:
@@ -248,7 +260,8 @@ def create_app(test_config=None):
     def retrieve_asset_classes():
 
         asset_classes = AssetClass.query.order_by(AssetClass.id).all()
-        asset_classes_formatted = [asset_class.format() for asset_class in asset_classes]
+        asset_classes_formatted = [asset_class.format()
+                                   for asset_class in asset_classes]
 
         if len(asset_classes_formatted) == 0:
             abort(404)
@@ -298,8 +311,8 @@ def create_app(test_config=None):
 
     return app
 
+
 app = create_app()
 
 if __name__ == '__main__':
     app.run()
-

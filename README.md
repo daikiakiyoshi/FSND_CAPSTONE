@@ -120,6 +120,7 @@ Asset Manager Specifications
 ## Testing
 To run the tests, run
 ```
+source setup.sh
 dropdb assetmanagement_test && createdb assetmanagement_test
 python helper.py
 psql assetmanagement_test < assetmanagement_data.psql
