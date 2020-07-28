@@ -39,6 +39,10 @@ class PortfolioComposition(db.Model):
 
     security = db.relationship("Security", backref="portfolio_composition")
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
     def format(self):
         return {
             'security_name': self.security.name,
@@ -63,6 +67,10 @@ class Portfolio(db.Model):
         "PortfolioComposition",
         backref="portfolio",
         cascade="all, delete, delete-orphan")
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     def format(self):
         return {'portfolio_id': self.id, 'portfolio_name': self.name, 'portfolio_compositions': [
@@ -90,6 +98,17 @@ class Security(db.Model):
 
     region = db.relationship("Region", backref="security")
     asset_class = db.relationship("AssetClass", backref="security")
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
 
     def format(self):
         return {

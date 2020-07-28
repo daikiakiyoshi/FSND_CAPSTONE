@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 import json
 
-from models import setup_db, db, Portfolio, Security, PortfolioComposition, AssetClass, Region
+from models import (setup_db, db, Portfolio, Security, PortfolioComposition, AssetClass, Region)
 from auth import AuthError, requires_auth
 
 
@@ -77,9 +77,7 @@ def create_app(test_config=None):
                 security_id=portfolio_composition['security_id'],
                 weight=portfolio_composition['weight'])
             composition.portfolio = portfolio
-            db.session.add(composition)
-
-        db.session.commit()
+            composition.insert()
 
         return jsonify({
             'success': True,
@@ -95,8 +93,7 @@ def create_app(test_config=None):
         if portfolio is None:
             abort(404)
 
-        db.session.delete(portfolio)
-        db.session.commit()
+        portfolio.delete()
 
         return jsonify({
             'success': True,
@@ -135,9 +132,7 @@ def create_app(test_config=None):
                     security_id=portfolio_composition['security_id'],
                     weight=portfolio_composition['weight'])
                 composition.portfolio = portfolio
-                db.session.add(composition)
-
-            db.session.commit()
+                composition.insert()
 
         return jsonify({
             'success': True,
@@ -194,6 +189,8 @@ def create_app(test_config=None):
             region_id=region_id,
             asset_class_id=asset_class_id)
 
+        security.insert()
+
         db.session.add(security)
         db.session.commit()
 
@@ -218,8 +215,7 @@ def create_app(test_config=None):
                 security_id=security_id).count() > 0:
             abort(422)
 
-        db.session.delete(security)
-        db.session.commit()
+        security.delete()
 
         return jsonify({
             'success': True,
@@ -249,7 +245,7 @@ def create_app(test_config=None):
         if new_asset_class_id is not None:
             security.asset_class_id = new_asset_class_id
 
-        db.session.commit()
+        security.update()
 
         return jsonify({
             'success': True,
@@ -300,6 +296,14 @@ def create_app(test_config=None):
             "error": 422,
             "message": "Unprocessable entity"
         }), 422
+
+    @app.errorhandler(500)
+    def server_error(error):
+        return jsonify({
+            "success": False,
+            "error": 500,
+            "message": "Server error"
+        }), 500
 
     @app.errorhandler(AuthError)
     def auth_error(error):
